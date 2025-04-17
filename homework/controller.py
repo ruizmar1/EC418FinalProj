@@ -178,8 +178,7 @@ def control(aim_point, current_vel, policy_net, steer_gain=6, skid_thresh=0.2, t
             # Because brake, drift, and nitro are booleans but we have continuous values, need to round values to 0 or 1 
             if (actions[0])[2]<0.5:
                 action.brake = 0
-            else:
-                # tweaked with never breaking 
+            else: 
                 action.brake = 1
 
             if (actions[0])[3]<0.5:
@@ -304,9 +303,11 @@ if __name__ == '__main__':
         for t in args.track:
             for i in range(10):
                 print("training epoch", i)
-                steps, how_far, loss = pytux.rollout_train(t, control, PPO_policy, optimizer, 1, max_frames=1000, verbose=args.verbose)
+                steps, how_far, loss, rewards = pytux.rollout_train(t, control, PPO_policy, optimizer, 1, max_frames=1000, verbose=args.verbose)
                 losses.append(loss)
                 print(steps, how_far)
+                print("LOSS", loss)
+                print("REWARDS", rewards)
         pytux.close()
 
         # Graphing loss over epochs

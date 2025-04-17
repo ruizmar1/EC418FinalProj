@@ -236,24 +236,17 @@ class PyTux:
             #####################################
 
             # Rewarding distance down track
-            reward_downtrack = kart.distance_down_track/10
-
-            # Rewarding high velocity
-            if current_vel<10:
-                reward_velocity = -1
-            else:
-                reward_velocity = current_vel/100
+            reward_downtrack = kart.distance_down_track/500
 
             # Penalizing crashing
             if current_vel < 1.0 and t - last_rescue > RESCUE_TIMEOUT:
                 last_rescue = t
                 action.rescue = True
-                reward_crash = -1
-            else:
-                reward_crash = 0.1
+
 
             # Adding up all rewards
-            reward = reward_crash + reward_velocity + reward_downtrack
+            #reward = reward_crash + reward_velocity + reward_downtrack
+            reward = reward_downtrack
             #print("reward", reward)
 
             # appending stuff
@@ -319,6 +312,7 @@ class PyTux:
                 actions = torch.tensor(actions)
                 advantage = returns - values
                 loss = ppo_update(PPO_policy, optimizer, 4, 50, states, actions, log_probs, returns, advantage)
+                total_rewards = sum(rewards)
         else:
             # here basically do nothing 
             print("You have finished the track!")
@@ -327,7 +321,7 @@ class PyTux:
             import matplotlib.pyplot as plt
             plt.close()
             
-        return t, kart.overall_distance / track.length, loss
+        return t, kart.overall_distance / track.length, loss, total_rewards
     
     def close(self):
         """
